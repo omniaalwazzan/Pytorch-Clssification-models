@@ -15,7 +15,7 @@ import argparse
 from vgg_19_11_bn import vgg19_bn
 from train_1 import train
 from test_1 import test
-from cifar10_network import net
+from cifar10_network import Net
 
 # Training
 
@@ -65,37 +65,6 @@ if device == 'cuda':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
-
-
-
-class Net(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.avgpool = nn.AdaptiveAvgPool2d((5, 5))
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
-
-    def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = self.avgpool(x) # usrd to provide the same output shape regardless of the input dimension size.
-        x = torch.flatten(x, 1) # flatten all dimensions except batch
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
-
-from torchsummary import summary
-
-net = Net()
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-net.to(device=DEVICE,dtype=torch.float)
-summary(net, (3, 100,100 ),1)
 
 
 if args.resume:
