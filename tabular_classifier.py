@@ -1,7 +1,7 @@
 #### Prams
 
-EPOCHS = 70
-BATCH_SIZE = 32
+EPOCHS = 100
+BATCH_SIZE = 10
 LEARNING_RATE = 0.001
 NUM_CLASSES = 2
 
@@ -26,8 +26,9 @@ from sklearn.metrics import precision_recall_curve,auc
 from random import random
 from random import seed
 
+from init_weights import *
 # seed the generator
-seed(7)
+#seed(7)
 
 df  =  pd.read_csv(r"D:\IAAA_CMMD\manifest-1616439774456\CMMD_clinicaldata_revision_1.csv")
 df.set_index('ID1', inplace=True)
@@ -157,6 +158,10 @@ class EHR(nn.Module):
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")    
 model = EHR()
 model.to(device)
+print("Number of Trainable Parameters: %d" % count_parameters(model))
+init_type = ['normal' , 'xavier' , 'kaiming' , 'orthogonal' , 'max']
+init_net(model, init_type[2])
+
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
@@ -265,7 +270,7 @@ fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(20,7))
 sns.lineplot(data=train_val_acc_df, x = "epochs", y="value", hue="variable",  ax=axes[0]).set_title('Train-Val Accuracy/Epoch')
 sns.lineplot(data=train_val_loss_df, x = "epochs", y="value", hue="variable", ax=axes[1]).set_title('Train-Val Loss/Epoch')
 
-### TESTING
+### Testing
 
 y_pred_list = []
 y_test_pred_arr = []
@@ -284,9 +289,9 @@ with torch.no_grad():
 
 y_pred_list = [a.squeeze().tolist() for a in y_pred_list]
 
-### EVALUATION ### 
+# confusion_matrix_df = pd.DataFrame(confusion_matrix(y_test, y_pred_list))
 
-
+# sns.heatmap(confusion_matrix_df, annot=True)
 
 cm = confusion_matrix(y_test, y_pred_list)
 classes= ['Benign', 'Malignant']
@@ -299,10 +304,13 @@ sns.heatmap(df_cm, annot=True, cmap=plt.cm.Blues, fmt='g')
 plt.xlabel("Predicted label", fontsize = 20)
 plt.ylabel("Ground Truth", fontsize = 20)
 
+#print(classification_report(y_test, y_pred_list))
+
 # from collections import Counter
 # Counter(y_test) # y_true must be your labels
 
 # Compute ROC curve and ROC area for each class
+
 
 test_y = y_test
 y_pred = y_pred_list
@@ -351,7 +359,7 @@ print ("precision-recall AUC is: ",metrics.auc(recall, precision))
 lr_precision, lr_recall, _ = precision_recall_curve(y_test, y_pred_list)
 lr_f1 = f1_score(y_test, y_pred_list)
 # summarize scores
-print('Logistic: f1=%.3f ' % (lr_f1))
+print('F1-score: f1=%.3f ' % (lr_f1))
 # plot the precision-recall curves
 no_skill = len(y_test[y_test==1]) / len(y_test)
 pyplot.plot([0, 1], [no_skill, no_skill], linestyle='--', label='No Skill')
