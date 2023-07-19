@@ -42,13 +42,10 @@ class MaxNet(nn.Module):
         features = self.encoder(x)
         return features
 
-#model = MaxNet()
-#print(model)
 
-def model_SNN() -> MaxNet:
-    model = MaxNet()
-    return model
+    
+input_size = (3,)
+model =  MaxNet()
+summary(model, input_size, device=DEVICE)
 
-modelA  = model_SNN()
-#print(modelA)
-summary(modelA,(3,),1,'cpu')
+
