@@ -5,9 +5,7 @@ path_to_save_check_points='/data/DERI-MMH/datasets/early_stopping/cnn_classifier
 path_to_checkpoints=path_to_save_check_points
 
 # FOLD 4
-train_clinical_path = '/data/DERI-MMH/datasets/roi_split/f4_roi/f4_train_roi.csv'
-val_clinical_path  = '/data/DERI-MMH/datasets/patches_split/fold4/f4_test.csv'
-test_clinical_path = '/data/DERI-MMH/datasets/patches_split/fold4/f4_test.csv'
+
 
 
 
